@@ -46,7 +46,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     // Gson
     implementation(libs.gson) // Replace with the latest version
-
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx) // Replace with the latest version
 
@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.core.i18n)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
