@@ -57,15 +57,22 @@ fun ActivityScreen() {
         }
         Text(text = "Today", fontWeight = FontWeight.W500, fontSize = 20.sp, color = Color.Black)
         Text(text = formattedDate, modifier = Modifier.padding(8.dp))
-      CircularProgressBar(200, PrimaryColor)
+        Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center){
+            CircularProgressBar(200, PrimaryColor)
+            CircularProgressBar(170, SecondaryColor)
+            Text(text = "Today", fontWeight = FontWeight.W500, fontSize = 20.sp, color = Color.Black)
+
+
+
+        }
     }
 }
 
 @Composable
 fun CircularProgressBar(size: Int, color: Color) {
 
-    Box(modifier = Modifier.size(size.dp)) {
-        androidx.compose.foundation.Canvas(modifier = Modifier.size(100.dp)) {
+    Box(modifier = Modifier.size(size.dp), contentAlignment = Alignment.Center) {
+        androidx.compose.foundation.Canvas(modifier = Modifier.size(size.dp)) {
             drawArc(color = color, startAngle = -90f, 360f, useCenter = false, style = Stroke(8.dp.toPx(), cap = StrokeCap.Round))
         }
     }
