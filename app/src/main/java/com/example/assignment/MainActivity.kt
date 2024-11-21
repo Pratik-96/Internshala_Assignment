@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
                             startDestination = Screens.ActivityScreen.route
                         ) {
                             composable(route = Screens.ActivityScreen.route) {
-                                ActivityScreen()
+                                ActivityScreen(navController)
                             }
                             composable(route = Screens.GoalsScreen.route) {
                                 GoalScreen()
@@ -117,33 +117,15 @@ class MainActivity : ComponentActivity() {
                             composable(route = Screens.ProfileScreen.route) {
                                 ProfileScreen()
                             }
+                            composable(route = Screens.DietScreen.route) {
+                                DietScreenComp(navController)
+                            }
                         }
                     }
                 }
 
 
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                  Column(modifier = Modifier
-//                      .fillMaxSize()
-//                      .padding(innerPadding)) {
-//                      val viewModel:MainViewModel = viewModel()
-//                      viewModel.fetchDataFromApi()
-//                      val state = viewModel.fetchRecipe.value
-//                      when{
-//                          state.loading->{
-//                              CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-//                          }
-//                          state.error != null->{
-//                                Text(state.error)
-//                          }
-//                          else->{
-//                              Text(state.data.toString())
-//                          }
-//                      }
-
-
-//                  }
-//                }
+//
             }
         }
     }

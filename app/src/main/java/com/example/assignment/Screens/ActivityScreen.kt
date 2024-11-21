@@ -1,8 +1,11 @@
 package com.example.assignment.Screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.assignment.DietScreen
 import com.example.assignment.R
 import com.example.assignment.ui.theme.AssignmentTheme
 import com.example.assignment.ui.theme.PrimaryColor
@@ -47,7 +52,7 @@ import org.threeten.bp.format.DateTimeFormatter
 
 @SuppressLint("NewApi")
 @Composable
-fun ActivityScreen() {
+fun ActivityScreen(navHostController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,14 +117,15 @@ fun ActivityScreen() {
 
         Goals()
 
-        Explore()
+        Explore(navHostController)
 
 
     }
 }
 
 @Composable
-fun Explore() {
+fun Explore(navHostController: NavHostController) {
+    val context = LocalContext.current as Activity
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -135,7 +141,11 @@ fun Explore() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .padding(top = 16.dp).clickable {
+
+                    navHostController.navigate(Screens.DietScreen.route)
+
+                },
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -338,13 +348,5 @@ fun TopBar() {
             null,
             modifier = Modifier.padding()
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ActivityPrev() {
-    AssignmentTheme {
-        ActivityScreen()
     }
 }
