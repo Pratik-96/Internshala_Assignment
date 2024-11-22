@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -39,15 +41,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.assignment.DataClasses.Data
 import com.example.assignment.DataClasses.NutritionInfo
 import com.example.assignment.ViewModels.MainViewModel
 import com.example.assignment.ui.theme.AssignmentTheme
 import com.example.assignment.ui.theme.PrimaryColor
+import com.google.gson.Gson
 
 data class SimilarItems(val name: String, val image: Int)
 
@@ -79,42 +84,37 @@ fun DietScreenComp(navHostController: NavHostController) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Center
 
     ) {
         val viewModel: MainViewModel = viewModel()
         viewModel.fetchDataFromApi()
         val state = viewModel.fetchRecipe.value
-//                        when {
-//                            state.loading -> {
-//                                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-//                            }
-//
-//                            state.error != null -> {
-//                                Text(state.error)
-//                            }
-//
-//                            else -> {
-        UI(navHostController)
-//                            }
-//                        }
+        when {
+            state.loading -> {
+                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+            }
+
+            state.error != null -> {
+                Text(state.error)
+            }
+
+            else -> {
+                UI(navHostController,state.data)
+            }
+        }
 
 
     }
 }
 
 @Composable
-fun UI(navHostController: NavHostController) {
-    val facts: List<String> = mutableListOf(
-        "Chicken biryani is a popular Indian dish made with fragrant basmati rice, tender chicken, and a blend of aromatic spices.",
-        "It is believed to have originated in the Indian subcontinent and is now enjoyed worldwide for its rich flavors and comforting taste.",
-        "There are many regional variations of chicken biryani, with each region adding its own unique twist to the dish.",
-        "Traditionally, chicken biryani is cooked in layers, with marinated chicken and partially cooked rice layered together and then slow-cooked to perfection.",
-        "Chicken biryani is often served with accompaniments such as raita, a yogurt-based condiment, and salan, a spicy curry."
-    )
+fun UI(navHostController: NavHostController, data: Data?) {
+    val facts: List<String> = data?.data?.generic_facts ?: listOf("null")
     Column(modifier = Modifier.fillMaxSize()) {
 
-        ImageContainer(navHostController)
+        ImageContainer(navHostController,data)
 
         Text(
             "Description", fontSize = 24.sp,
@@ -122,8 +122,9 @@ fun UI(navHostController: NavHostController) {
             modifier = Modifier.padding(16.dp)
         )
         Text(
-            "Traditional Indian Rice Preparation with helf boiled fragrant basmati rice,aromatic Indian spices yogurt and chicken",
-            fontSize = 16.sp,
+            data?.data?.description.toString(),
+            fontSize = 18.sp,
+            fontFamily = FontFamily.SansSerif,
             modifier = Modifier.padding(16.dp)
         )
 
@@ -133,12 +134,9 @@ fun UI(navHostController: NavHostController) {
             modifier = Modifier.padding(16.dp)
         )
 
-        val nutritionInfo = listOf(
-            NutritionInfo("Kcal", "Energy", 1387.0),
-            NutritionInfo("Kcal", "Energy", 1387.0),
-            NutritionInfo("Kcal", "Energy", 1387.0),
+        val gson = Gson()
 
-            )
+        val nutritionInfo:List<NutritionInfo> = gson.fromJson(data?.data?.nutrition_info,Array<NutritionInfo>::class.java).toList()
 
         Column(
             modifier = Modifier
@@ -222,10 +220,27 @@ fun UI(navHostController: NavHostController) {
 @Composable
 fun SimilarItemsDesign(item: SimilarItems) {
 
-    Box(modifier = Modifier.width(220.dp).padding(8.dp).background(color = Color.White, shape = RoundedCornerShape(16.dp))) {
+    Box(
+        modifier = Modifier
+            .width(220.dp)
+            .padding(8.dp)
+            .background(color = Color.White, shape = RoundedCornerShape(16.dp))
+    ) {
 
-        Image(painter = painterResource(item.image),null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().clip(shape = RoundedCornerShape(16.dp)))
-        Text(item.name, color = Color.White, fontWeight = FontWeight.W500, modifier = Modifier.align(Alignment.BottomCenter))
+        Image(
+            painter = painterResource(item.image),
+            null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(shape = RoundedCornerShape(16.dp))
+        )
+        Text(
+            item.name,
+            color = Color.White,
+            fontWeight = FontWeight.W500,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 
 }
@@ -237,17 +252,19 @@ fun FactItem(item: String) {
         modifier = Modifier
             .width(300.dp)
             .padding(8.dp)
-            .background(color = PrimaryColor.copy(0.9f), shape = RoundedCornerShape(16.dp))
+            .background(color = Color(0xFFF8B944).copy(0.8f), shape = RoundedCornerShape(16.dp))
     ) {
         Text(
             "Do You Know ?", fontSize = 24.sp,
             fontWeight = FontWeight.W500,
+            fontFamily = FontFamily.SansSerif,
             color = Color.White,
             modifier = Modifier.padding(8.dp)
         )
         Text(
             item,
             color = Color.White,
+            fontFamily = FontFamily.SansSerif,
             fontSize = 16.sp,
             modifier = Modifier.padding(8.dp)
         )
@@ -257,7 +274,7 @@ fun FactItem(item: String) {
 }
 
 @Composable
-fun ImageContainer(navHostController: NavHostController) {
+fun ImageContainer(navHostController: NavHostController, data: Data?) {
     Box(modifier = Modifier.wrapContentSize()) {
         Image(
             painter = painterResource(R.drawable.biryani),
@@ -287,7 +304,7 @@ fun ImageContainer(navHostController: NavHostController) {
                 modifier = Modifier.padding(8.dp)
             )
             Text(
-                "Chicken Biryani",
+                data?.data?.name.toString(),
                 fontWeight = FontWeight.W500,
                 fontSize = 24.sp,
                 color = Color.White,
@@ -302,7 +319,7 @@ fun ImageContainer(navHostController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "76",
+                data?.data?.health_rating.toString(),
                 fontWeight = FontWeight.W500,
                 fontSize = 24.sp,
                 color = Color.White,
