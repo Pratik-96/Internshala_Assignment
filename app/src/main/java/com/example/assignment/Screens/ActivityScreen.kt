@@ -3,6 +3,8 @@ package com.example.assignment.Screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,9 +25,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -78,8 +82,8 @@ fun ActivityScreen(navHostController: NavHostController) {
         Text(text = formattedDate, modifier = Modifier.padding(8.dp))
         Spacer(Modifier.padding(8.dp))
         Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
-            CircularProgressBar(200, PrimaryColor.copy(0.5f))
-            CircularProgressBar(170, SecondaryColor.copy(0.5f))
+            CircularProgressBar(200, PrimaryColor)
+            CircularProgressBar(170, SecondaryColor)
             Text(
                 text = "SET GOAL!",
                 fontWeight = FontWeight.ExtraBold,
@@ -299,17 +303,34 @@ fun WorkoutData() {
 @Composable
 fun CircularProgressBar(size: Int, color: Color) {
 
+    var animationPlayed by remember { mutableStateOf(false) }
+
+    val curPercentage = animateFloatAsState(
+        targetValue = if (animationPlayed) 100f else 0f,
+        animationSpec = tween(
+            durationMillis = 8000,
+            delayMillis = 1000
+        )
+    )
+
+    LaunchedEffect(Unit) {
+
+        animationPlayed = true
+    }
+
     Box(modifier = Modifier.size(size.dp), contentAlignment = Alignment.Center) {
         androidx.compose.foundation.Canvas(modifier = Modifier.size(size.dp)) {
             drawArc(
                 color = color,
                 startAngle = -90f,
-                360f,
+                360 * curPercentage.value,
                 useCenter = false,
                 style = Stroke(8.dp.toPx(), cap = StrokeCap.Round)
             )
         }
     }
+
+
 
 }
 
